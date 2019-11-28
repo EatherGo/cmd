@@ -8,6 +8,7 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"strings"
 
 	"github.com/joho/godotenv"
 	"github.com/urfave/cli"
@@ -130,6 +131,26 @@ func ` + name + `() (f eather.Module, err error) {
 		fmt.Println("Error creating")
 		fmt.Println(err)
 	}
+
+	dat, _ := ioutil.ReadFile("config/modules.xml")
+
+	index := strings.Index(string(dat), "</modules>")
+	mod := `	<module>
+		<name>HelloWorld</name>
+		<enabled>true</enabled>
+	</module>`
+	dats := string(dat[:index]) + mod + "\n" + string(dat[index:])
+
+	f, err := os.OpenFile("config/modules.xml", os.O_RDWR, 0644)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	fmt.Println(string(dats))
+
+	f.Truncate(0)
+
+	f.Write([]byte(dats))
 
 	return nil
 }
