@@ -71,12 +71,26 @@ func createModule(c *cli.Context) error {
 		return errors.New("Error loading .env file")
 	}
 
-	fmt.Println(os.Getenv("CUSTOM_MODULES_DIR"))
-	if _, err := os.Stat("/src/Modules"); os.IsNotExist(err) {
-		// path/to/whatever does not exist
+	modulesDir := os.Getenv("CUSTOM_MODULES_DIR")
+	if modulesDir == "" {
+		return errors.New("Error loading CUSTOM_MODULE_DIR from env")
 	}
 
+	if _, err := os.Stat(modulesDir); os.IsNotExist(err) {
+		return errors.New(modulesDir + " does not exists.")
+	}
+
+	newModule(modulesDir, name)
+
 	fmt.Println(name)
+
+	return nil
+}
+
+func newModule(dir string, name string) error {
+	if err := os.MkdirAll(dir+"/"+name, os.ModePerm); err != nil {
+		return errors.New("cannot create module" + name)
+	}
 
 	return nil
 }
