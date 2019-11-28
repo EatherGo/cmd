@@ -88,8 +88,28 @@ func createModule(c *cli.Context) error {
 }
 
 func newModule(dir string, name string) error {
-	if err := os.MkdirAll(dir+"/"+name, os.ModePerm); err != nil {
+	path := dir + "/" + name
+	if err := os.MkdirAll(path, os.ModePerm); err != nil {
 		return errors.New("cannot create module" + name)
+	}
+
+	if err := os.MkdirAll(path+"/etc", os.ModePerm); err != nil {
+		return errors.New("cannot create module" + name)
+	}
+
+	moduleXML := `
+	<?xml version="1.0" encoding="UTF-8"?>
+	<module>
+		<name>` + name + `</name>
+		<version>1.0.0</version>
+	</module>
+	
+	`
+
+	err := ioutil.WriteFile(path+"/etc/module.xml", []byte(moduleXML), 0644)
+	if err != nil {
+		fmt.Println("Error creating")
+		fmt.Println(err)
 	}
 
 	return nil
