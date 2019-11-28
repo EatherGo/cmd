@@ -97,16 +97,35 @@ func newModule(dir string, name string) error {
 		return errors.New("cannot create module" + name)
 	}
 
-	moduleXML := `
-	<?xml version="1.0" encoding="UTF-8"?>
-	<module>
-		<name>` + name + `</name>
-		<version>1.0.0</version>
-	</module>
-	
-	`
+	moduleXML := `<?xml version="1.0" encoding="UTF-8"?>
+<module>
+	<name>` + name + `</name>
+	<version>1.0.0</version>
+</module>
+`
 
 	err := ioutil.WriteFile(path+"/etc/module.xml", []byte(moduleXML), 0644)
+	if err != nil {
+		fmt.Println("Error creating")
+		fmt.Println(err)
+	}
+
+	mainGo := `package main
+
+import (
+	"github.com/EatherGo/eather"
+)
+
+type module struct{}
+
+// ` + name + ` to export in plugin
+func ` + name + `() (f eather.Module, err error) {
+	f = module{}
+	return
+}
+`
+
+	err = ioutil.WriteFile(path+"/main.go", []byte(mainGo), 0644)
 	if err != nil {
 		fmt.Println("Error creating")
 		fmt.Println(err)
