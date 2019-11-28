@@ -9,6 +9,7 @@ import (
 	"os"
 	"os/exec"
 
+	"github.com/joho/godotenv"
 	"github.com/urfave/cli"
 )
 
@@ -60,4 +61,22 @@ func createNew(c *cli.Context) error {
 	}
 
 	return errors.New("git not found")
+}
+
+func createModule(c *cli.Context) error {
+	name := c.String("name")
+
+	err := godotenv.Load()
+	if err != nil {
+		return errors.New("Error loading .env file")
+	}
+
+	fmt.Println(os.Getenv("CUSTOM_MODULES_DIR"))
+	if _, err := os.Stat("/src/Modules"); os.IsNotExist(err) {
+		// path/to/whatever does not exist
+	}
+
+	fmt.Println(name)
+
+	return nil
 }

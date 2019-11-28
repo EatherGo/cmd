@@ -26,6 +26,15 @@ func main() {
 					&cli.StringFlag{Name: "name", Aliases: []string{"n"}},
 				},
 			},
+			{
+				Name:    "module",
+				Aliases: []string{"m"},
+				Usage:   "Create new module for application",
+				Action:  createModule,
+				Flags: []cli.Flag{
+					&cli.StringFlag{Name: "name", Aliases: []string{"n"}},
+				},
+			},
 		},
 	}
 
