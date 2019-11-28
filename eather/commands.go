@@ -136,7 +136,7 @@ func ` + name + `() (f eather.Module, err error) {
 
 	index := strings.Index(string(dat), "</modules>")
 	mod := `	<module>
-		<name>HelloWorld</name>
+		<name>` + name + `</name>
 		<enabled>true</enabled>
 	</module>`
 	dats := string(dat[:index]) + mod + "\n" + string(dat[index:])
@@ -145,8 +145,6 @@ func ` + name + `() (f eather.Module, err error) {
 	if err != nil {
 		fmt.Println(err)
 	}
-
-	fmt.Println(string(dats))
 
 	f.Truncate(0)
 
