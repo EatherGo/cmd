@@ -1,7 +1,36 @@
 package main
 
-import "fmt"
+import (
+	"log"
+	"os"
+
+	"github.com/urfave/cli"
+)
+
+var (
+	eatherCorePath = "github/EatherGo/eather"
+)
 
 func main() {
-	fmt.Println("Initial cmd")
+	app := &cli.App{
+		Name:    name,
+		Usage:   usage,
+		Version: version,
+		Commands: []*cli.Command{
+			{
+				Name:    "create",
+				Aliases: []string{"c"},
+				Usage:   "Create new eather application",
+				Action:  createNew,
+				Flags: []cli.Flag{
+					&cli.StringFlag{Name: "name", Aliases: []string{"n"}},
+				},
+			},
+		},
+	}
+
+	err := app.Run(os.Args)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
