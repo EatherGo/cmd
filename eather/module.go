@@ -1,5 +1,7 @@
 package main
 
+import "strings"
+
 // ModuleXML module.xml template
 const ModuleXML = `
 <?xml version="1.0" encoding="UTF-8"?>
@@ -30,3 +32,15 @@ const ModuleMainConf = `	<module>
         <name>{{name}}</name>
         <enabled>true</enabled>
     </module>`
+
+type template interface {
+	parseData(name string) string
+}
+
+type templater struct {
+	template string
+}
+
+func (t templater) parseData(name string) string {
+	return strings.Replace(t.template, "{{name}}", name, -1)
+}

@@ -89,6 +89,11 @@ func createModule(c *cli.Context) error {
 }
 
 func newModule(dir string, name string) error {
+
+	moduleXMLTemplate := templater{template: ModuleXML}
+	moduleMainTemplate := templater{template: ModuleMain}
+	moduleMainConfTemplate := templater{template: ModuleMainConf}
+
 	path := dir + "/" + name
 	if err := os.MkdirAll(path, os.ModePerm); err != nil {
 		return errors.New("cannot create module" + name)
@@ -98,17 +103,13 @@ func newModule(dir string, name string) error {
 		return errors.New("cannot create module" + name)
 	}
 
-	moduleXML := strings.Replace(ModuleXML, "{{name}}", name, -1)
-
-	err := ioutil.WriteFile(path+"/etc/module.xml", []byte(moduleXML), 0644)
+	err := ioutil.WriteFile(path+"/etc/module.xml", []byte(moduleXMLTemplate.parseData(name)), 0644)
 	if err != nil {
 		fmt.Println("Error creating")
 		fmt.Println(err)
 	}
 
-	mainGo := strings.Replace(ModuleMain, "{{name}}", name, -1)
-
-	err = ioutil.WriteFile(path+"/main.go", []byte(mainGo), 0644)
+	err = ioutil.WriteFile(path+"/main.go", []byte(moduleMainTemplate.parseData(name)), 0644)
 	if err != nil {
 		fmt.Println("Error creating")
 		fmt.Println(err)
@@ -118,8 +119,7 @@ func newModule(dir string, name string) error {
 
 	index := strings.Index(string(dat), "</modules>")
 
-	mod := strings.Replace(ModuleMainConf, "{{name}}", name, -1)
-	dats := string(dat[:index]) + mod + "\n" + string(dat[index:])
+	dats := string(dat[:index]) + moduleMainConfTemplate.parseData(name) + "\n" + string(dat[index:])
 
 	f, err := os.OpenFile("config/modules.xml", os.O_RDWR, 0644)
 	if err != nil {
