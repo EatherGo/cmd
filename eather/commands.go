@@ -98,12 +98,7 @@ func newModule(dir string, name string) error {
 		return errors.New("cannot create module" + name)
 	}
 
-	moduleXML := `<?xml version="1.0" encoding="UTF-8"?>
-<module>
-	<name>` + name + `</name>
-	<version>1.0.0</version>
-</module>
-`
+	moduleXML := strings.Replace(ModuleXML, "{{name}}", name, -1)
 
 	err := ioutil.WriteFile(path+"/etc/module.xml", []byte(moduleXML), 0644)
 	if err != nil {
@@ -111,20 +106,7 @@ func newModule(dir string, name string) error {
 		fmt.Println(err)
 	}
 
-	mainGo := `package main
-
-import (
-	"github.com/EatherGo/eather"
-)
-
-type module struct{}
-
-// ` + name + ` to export in plugin
-func ` + name + `() (f eather.Module, err error) {
-	f = module{}
-	return
-}
-`
+	mainGo := strings.Replace(ModuleMain, "{{name}}", name, -1)
 
 	err = ioutil.WriteFile(path+"/main.go", []byte(mainGo), 0644)
 	if err != nil {
@@ -135,10 +117,8 @@ func ` + name + `() (f eather.Module, err error) {
 	dat, _ := ioutil.ReadFile("config/modules.xml")
 
 	index := strings.Index(string(dat), "</modules>")
-	mod := `	<module>
-		<name>` + name + `</name>
-		<enabled>true</enabled>
-	</module>`
+
+	mod := strings.Replace(ModuleMainConf, "{{name}}", name, -1)
 	dats := string(dat[:index]) + mod + "\n" + string(dat[index:])
 
 	f, err := os.OpenFile("config/modules.xml", os.O_RDWR, 0644)
