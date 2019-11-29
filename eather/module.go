@@ -1,6 +1,11 @@
 package main
 
-import "strings"
+import (
+	"fmt"
+	"io/ioutil"
+	"os"
+	"strings"
+)
 
 // ModuleXML module.xml template
 const ModuleXML = `
@@ -39,8 +44,34 @@ type template interface {
 
 type templater struct {
 	template string
+	name     string
 }
 
-func (t templater) parseData(name string) string {
-	return strings.Replace(t.template, "{{name}}", name, -1)
+func (t templater) parseData() string {
+	return strings.Replace(t.template, "{{name}}", t.name, -1)
+}
+
+func createFile(fpath string, template templater) {
+	err := ioutil.WriteFile(fpath, []byte(template.parseData()), 0644)
+	if err != nil {
+		fmt.Println("Error creating")
+		fmt.Println(err)
+	}
+}
+
+func addToModulesConf(template templater) {
+	dat, _ := ioutil.ReadFile("config/modules.xml")
+
+	index := strings.Index(string(dat), "</modules>")
+
+	dats := string(dat[:index]) + template.parseData() + "\n" + string(dat[index:])
+
+	f, err := os.OpenFile("config/modules.xml", os.O_RDWR, 0644)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	f.Truncate(0)
+
+	f.Write([]byte(dats))
 }

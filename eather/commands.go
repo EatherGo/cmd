@@ -8,7 +8,6 @@ import (
 	"log"
 	"os"
 	"os/exec"
-	"strings"
 
 	"github.com/joho/godotenv"
 	"github.com/urfave/cli"
@@ -89,46 +88,16 @@ func createModule(c *cli.Context) error {
 }
 
 func newModule(dir string, name string) error {
-
-	moduleXMLTemplate := templater{template: ModuleXML}
-	moduleMainTemplate := templater{template: ModuleMain}
-	moduleMainConfTemplate := templater{template: ModuleMainConf}
-
 	path := dir + "/" + name
-	if err := os.MkdirAll(path, os.ModePerm); err != nil {
-		return errors.New("cannot create module" + name)
-	}
-
 	if err := os.MkdirAll(path+"/etc", os.ModePerm); err != nil {
 		return errors.New("cannot create module" + name)
 	}
 
-	err := ioutil.WriteFile(path+"/etc/module.xml", []byte(moduleXMLTemplate.parseData(name)), 0644)
-	if err != nil {
-		fmt.Println("Error creating")
-		fmt.Println(err)
-	}
+	createFile(path+"/etc/module.xml", templater{template: ModuleXML, name: name})
 
-	err = ioutil.WriteFile(path+"/main.go", []byte(moduleMainTemplate.parseData(name)), 0644)
-	if err != nil {
-		fmt.Println("Error creating")
-		fmt.Println(err)
-	}
+	createFile(path+"/main.go", templater{template: ModuleMain, name: name})
 
-	dat, _ := ioutil.ReadFile("config/modules.xml")
-
-	index := strings.Index(string(dat), "</modules>")
-
-	dats := string(dat[:index]) + moduleMainConfTemplate.parseData(name) + "\n" + string(dat[index:])
-
-	f, err := os.OpenFile("config/modules.xml", os.O_RDWR, 0644)
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	f.Truncate(0)
-
-	f.Write([]byte(dats))
+	addToModulesConf(templater{template: ModuleMainConf, name: name})
 
 	return nil
 }
