@@ -54,6 +54,14 @@ func Index(w http.ResponseWriter, r *http.Request) {
 }
 `
 
+const ModuleMainMapRouter = `
+func (m module) MapRoutes() {
+	router := eather.GetRouter()
+
+	router.HandleFunc("/index", controller.Index).Methods("GET")
+}
+`
+
 type template interface {
 	parseData(name string) string
 }
@@ -79,25 +87,13 @@ func createFile(fpath string, template templater) {
 	}
 }
 
-func addToModulesConf(template templater) {
-	dat, _ := ioutil.ReadFile("config/modules.xml")
-
-	index := strings.Index(string(dat), "</modules>")
-
-	dats := string(dat[:index]) + template.parseData() + "\n" + string(dat[index:])
-
-	f, err := os.OpenFile("config/modules.xml", os.O_RDWR, 0644)
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	f.Truncate(0)
-
-	f.Write([]byte(dats))
-}
-
 func newModule(dir string, name string) error {
 	path := dir + "/" + name
+
+	if _, err := os.Stat(path); !os.IsNotExist(err) {
+		return errors.New("module " + name + " already exists")
+	}
+
 	if err := os.MkdirAll(path+"/etc", os.ModePerm); err != nil {
 		return errors.New("cannot create module" + name)
 	}
@@ -106,7 +102,7 @@ func newModule(dir string, name string) error {
 
 	createFile(path+"/main.go", templater{template: ModuleMain, name: name})
 
-	addToModulesConf(templater{template: ModuleMainConf, name: name})
+	writeToFileAfter("config/modules.xml", "</modules>", templater{template: ModuleMainConf, name: name})
 
 	return nil
 }
@@ -117,7 +113,26 @@ func initModController(dir string, name string) error {
 		return errors.New("cannot create controller folder for module" + name)
 	}
 
-	createFile(path+"/controller/"+name, templater{template: ModuleController})
+	createFile(path+"/controller/"+name+".go", templater{template: ModuleController})
+
+	writeToFileAfter(path+"/main.go", "type module struct{}", templater{template: ModuleMainMapRouter})
 
 	return nil
+}
+
+func writeToFileAfter(file string, needle string, template templater) {
+	dat, _ := ioutil.ReadFile(file)
+
+	index := strings.Index(string(dat), needle)
+
+	dats := string(dat[:index]) + template.parseData() + "\n" + string(dat[index:])
+
+	f, err := os.OpenFile(file, os.O_RDWR, 0644)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	f.Truncate(0)
+
+	f.Write([]byte(dats))
 }
