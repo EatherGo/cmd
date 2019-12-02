@@ -36,7 +36,7 @@ func main() {
 					&cli.StringFlag{Name: "path", Aliases: []string{"p"}},
 					&cli.BoolFlag{Name: "controller", Aliases: []string{"c"}},
 					&cli.BoolFlag{Name: "events", Aliases: []string{"e"}},
-					&cli.StringFlag{Name: "module", Aliases: []string{"m"}},
+					&cli.StringFlag{Name: "model", Aliases: []string{"m"}},
 				},
 			},
 		},
