@@ -54,11 +54,12 @@ func Index(w http.ResponseWriter, r *http.Request) {
 }
 `
 
+// ModuleMainMapRouter template for MapRoutes function
 const ModuleMainMapRouter = `
 func (m module) MapRoutes() {
 	router := eather.GetRouter()
 
-	router.HandleFunc("/index", controller.Index).Methods("GET")
+	router.HandleFunc("/index", Index).Methods("GET")
 }
 `
 
@@ -102,25 +103,22 @@ func newModule(dir string, name string) error {
 
 	createFile(path+"/main.go", templater{template: ModuleMain, name: name})
 
-	writeToFileAfter("config/modules.xml", "</modules>", templater{template: ModuleMainConf, name: name})
+	writeToFileBefore("config/modules.xml", "</modules>", templater{template: ModuleMainConf, name: name})
 
 	return nil
 }
 
 func initModController(dir string, name string) error {
 	path := dir + "/" + name
-	if err := os.MkdirAll(path+"/controller", os.ModePerm); err != nil {
-		return errors.New("cannot create controller folder for module" + name)
-	}
 
-	createFile(path+"/controller/"+name+".go", templater{template: ModuleController})
+	createFile(path+"/controller.go", templater{template: ModuleController})
 
-	writeToFileAfter(path+"/main.go", "type module struct{}", templater{template: ModuleMainMapRouter})
+	writeToFileBefore(path+"/main.go", "// "+name, templater{template: ModuleMainMapRouter})
 
 	return nil
 }
 
-func writeToFileAfter(file string, needle string, template templater) {
+func writeToFileBefore(file string, needle string, template templater) {
 	dat, _ := ioutil.ReadFile(file)
 
 	index := strings.Index(string(dat), needle)
