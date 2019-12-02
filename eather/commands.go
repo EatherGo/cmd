@@ -83,6 +83,10 @@ func createModule(c *cli.Context) error {
 		return errors.New(modulesDir + " does not exists.")
 	}
 
+	if _, err := os.Stat(modulesDir + "/" + name); !os.IsNotExist(err) {
+		return errors.New("module " + name + " already exists")
+	}
+
 	newModule(modulesDir, name)
 
 	if c.Bool("controller") {

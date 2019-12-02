@@ -119,10 +119,6 @@ func createFile(fpath string, template templater) {
 func newModule(dir string, name string) error {
 	path := dir + "/" + name
 
-	if _, err := os.Stat(path); !os.IsNotExist(err) {
-		return errors.New("module " + name + " already exists")
-	}
-
 	if err := os.MkdirAll(path+"/etc", os.ModePerm); err != nil {
 		return errors.New("cannot create module" + name)
 	}
