@@ -147,7 +147,7 @@ func initModEvents(dir string, name string) error {
 
 	createFile(path+"/events.go", templater{template: ModuleEvents})
 
-	writeToFileBefore(path+"etc/module.xml", "</module>", templater{template: ModuleEventsXML})
+	writeToFileBefore(path+"/etc/module.xml", "</module>", templater{template: ModuleEventsXML})
 
 	return nil
 }
