@@ -65,15 +65,18 @@ func createNew(c *cli.Context) error {
 
 func createModule(c *cli.Context) error {
 	name := c.String("name")
+	modulesDir := c.String("path")
 
 	err := godotenv.Load()
 	if err != nil {
 		return errors.New("Error loading .env file")
 	}
 
-	modulesDir := os.Getenv("CUSTOM_MODULES_DIR")
 	if modulesDir == "" {
-		return errors.New("Error loading CUSTOM_MODULE_DIR from env")
+		modulesDir = os.Getenv("CUSTOM_MODULES_DIR")
+		if modulesDir == "" {
+			return errors.New("Error loading CUSTOM_MODULE_DIR from env")
+		}
 	}
 
 	if _, err := os.Stat(modulesDir); os.IsNotExist(err) {
@@ -82,22 +85,11 @@ func createModule(c *cli.Context) error {
 
 	newModule(modulesDir, name)
 
-	fmt.Println(name)
-
-	return nil
-}
-
-func newModule(dir string, name string) error {
-	path := dir + "/" + name
-	if err := os.MkdirAll(path+"/etc", os.ModePerm); err != nil {
-		return errors.New("cannot create module" + name)
+	if c.Bool("controller") {
+		initModController(modulesDir, name)
 	}
 
-	createFile(path+"/etc/module.xml", templater{template: ModuleXML, name: name})
-
-	createFile(path+"/main.go", templater{template: ModuleMain, name: name})
-
-	addToModulesConf(templater{template: ModuleMainConf, name: name})
+	fmt.Println("Module " + name + " was crafted")
 
 	return nil
 }

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"os"
@@ -38,6 +39,21 @@ const ModuleMainConf = `	<module>
         <enabled>true</enabled>
     </module>`
 
+// ModuleController template to create controller for module
+const ModuleController = `package controller
+
+import (
+	"net/http"
+
+	"github.com/EatherGo/eather"
+)
+
+// Index
+func Index(w http.ResponseWriter, r *http.Request) {
+	eather.SendJSONResponse(w, eather.Response{Message: "Running", Status: true})
+}
+`
+
 type template interface {
 	parseData(name string) string
 }
@@ -48,7 +64,11 @@ type templater struct {
 }
 
 func (t templater) parseData() string {
-	return strings.Replace(t.template, "{{name}}", t.name, -1)
+	if t.name != "" {
+		return strings.Replace(t.template, "{{name}}", t.name, -1)
+	}
+
+	return t.template
 }
 
 func createFile(fpath string, template templater) {
@@ -74,4 +94,30 @@ func addToModulesConf(template templater) {
 	f.Truncate(0)
 
 	f.Write([]byte(dats))
+}
+
+func newModule(dir string, name string) error {
+	path := dir + "/" + name
+	if err := os.MkdirAll(path+"/etc", os.ModePerm); err != nil {
+		return errors.New("cannot create module" + name)
+	}
+
+	createFile(path+"/etc/module.xml", templater{template: ModuleXML, name: name})
+
+	createFile(path+"/main.go", templater{template: ModuleMain, name: name})
+
+	addToModulesConf(templater{template: ModuleMainConf, name: name})
+
+	return nil
+}
+
+func initModController(dir string, name string) error {
+	path := dir + "/" + name
+	if err := os.MkdirAll(path+"/controller", os.ModePerm); err != nil {
+		return errors.New("cannot create controller folder for module" + name)
+	}
+
+	createFile(path+"/controller/"+name, templater{template: ModuleController})
+
+	return nil
 }

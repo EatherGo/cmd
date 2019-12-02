@@ -33,6 +33,8 @@ func main() {
 				Action:  createModule,
 				Flags: []cli.Flag{
 					&cli.StringFlag{Name: "name", Aliases: []string{"n"}},
+					&cli.StringFlag{Name: "path", Aliases: []string{"p"}},
+					&cli.BoolFlag{Name: "controller", Aliases: []string{"c"}},
 				},
 			},
 		},
