@@ -89,6 +89,27 @@ const ModuleEventsXML = `	<events>
 		<listener for="product_added" call="added" name="add_some_stuff"></listener>
 	</events>`
 
+// ModuleInstall template to add install func to main.go
+const ModuleInstall = `
+// Install will run when module is installed to the database
+func (m module) Install() {
+	eather.GetDb().AutoMigrate(&{{name}}{})
+}
+`
+
+// ModuleModel template for model.go
+const ModuleModel = `package main
+
+import (
+	"github.com/EatherGo/eather"
+)
+
+// {{name}} struct
+type {{name}} struct {
+	eather.ModelBase
+}
+`
+
 type template interface {
 	parseData(name string) string
 }
@@ -146,6 +167,16 @@ func initModEvents(dir string, name string) error {
 	createFile(path+"/events.go", templater{template: ModuleEvents})
 
 	writeToFileBefore(path+"/etc/module.xml", "</module>", templater{template: ModuleEventsXML})
+
+	return nil
+}
+
+func initModModel(dir string, name string, model string) error {
+	path := dir + "/" + name
+
+	createFile(path+"/model.go", templater{template: ModuleModel, name: model})
+
+	writeToFileBefore(path+"/main.go", "// "+name, templater{template: ModuleInstall, name: model})
 
 	return nil
 }

@@ -97,6 +97,10 @@ func createModule(c *cli.Context) error {
 		initModEvents(modulesDir, name)
 	}
 
+	if model := c.String("model"); model != "" {
+		initModModel(modulesDir, name, model)
+	}
+
 	fmt.Println("Module " + name + " was crafted")
 
 	return nil
