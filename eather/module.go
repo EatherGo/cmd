@@ -48,7 +48,7 @@ import (
 	"github.com/EatherGo/eather"
 )
 
-// Index
+// Index controller
 func Index(w http.ResponseWriter, r *http.Request) {
 	eather.SendJSONResponse(w, eather.Response{Message: "Running", Status: true})
 }
@@ -85,11 +85,9 @@ var added = func(data ...interface{}) {
 `
 
 // ModuleEventsXML add events to xml
-const ModuleEventsXML = `
-	<events>
+const ModuleEventsXML = `	<events>
 		<listener for="product_added" call="added" name="add_some_stuff"></listener>
-	</events>
-`
+	</events>`
 
 type template interface {
 	parseData(name string) string
