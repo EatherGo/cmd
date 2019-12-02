@@ -40,7 +40,7 @@ const ModuleMainConf = `	<module>
     </module>`
 
 // ModuleController template to create controller for module
-const ModuleController = `package controller
+const ModuleController = `package main
 
 import (
 	"net/http"
