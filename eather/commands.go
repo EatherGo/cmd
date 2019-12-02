@@ -101,6 +101,18 @@ func createModule(c *cli.Context) error {
 		initModModel(modulesDir, name, model)
 	}
 
+	if c.Bool("upgrade") {
+		initModUpgrade(modulesDir, name)
+	}
+
+	if c.Bool("cron") {
+		initModCron(modulesDir, name)
+	}
+
+	if c.Bool("call") {
+		initModCallable(modulesDir, name)
+	}
+
 	fmt.Println("Module " + name + " was crafted")
 
 	return nil

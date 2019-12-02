@@ -55,7 +55,7 @@ func Index(w http.ResponseWriter, r *http.Request) {
 `
 
 // ModuleMainMapRouter template for MapRoutes function
-const ModuleMainMapRouter = `
+const ModuleMainMapRouter = `// MapRoutes will map all routes
 func (m module) MapRoutes() {
 	router := eather.GetRouter()
 
@@ -90,8 +90,7 @@ const ModuleEventsXML = `	<events>
 	</events>`
 
 // ModuleInstall template to add install func to main.go
-const ModuleInstall = `
-// Install will run when module is installed to the database
+const ModuleInstall = `// Install will run when module is installed to the database
 func (m module) Install() {
 	eather.GetDb().AutoMigrate(&{{name}}{})
 }
@@ -107,6 +106,38 @@ import (
 // {{name}} struct
 type {{name}} struct {
 	eather.ModelBase
+}
+`
+
+// ModuleUpgrade template for upgrade func
+const ModuleUpgrade = `// Upgrade will be fired when module version will be updated
+func (m module) Upgrade(version string) {
+	
+}
+`
+
+// ModuleCron template for crons in module
+const ModuleCron = `// Crons will return all crons for module
+func (m module) Crons() eather.CronList {
+	return eather.CronList{
+		eather.Cron{Spec: "* * * * *", Cmd: func() { 
+			// Code here
+		}},
+	}
+}
+`
+
+const ModuleCall = `// GetPublicFuncs will return func list to make it visible by other modules
+func (m module) GetPublicFuncs() eather.PublicFuncList {
+	list := make(eather.PublicFuncList)
+
+	list["test"] = test
+
+	return list
+}
+
+func test(data ...interface{}) (interface{}, error) {
+	return []string{"testing public function of module"}, nil
 }
 `
 
@@ -177,6 +208,29 @@ func initModModel(dir string, name string, model string) error {
 	createFile(path+"/model.go", templater{template: ModuleModel, name: model})
 
 	writeToFileBefore(path+"/main.go", "// "+name, templater{template: ModuleInstall, name: model})
+
+	return nil
+}
+
+func initModUpgrade(dir string, name string) error {
+	path := dir + "/" + name
+
+	writeToFileBefore(path+"/main.go", "// "+name, templater{template: ModuleUpgrade})
+
+	return nil
+}
+func initModCron(dir string, name string) error {
+	path := dir + "/" + name
+
+	writeToFileBefore(path+"/main.go", "// "+name, templater{template: ModuleCron})
+
+	return nil
+}
+
+func initModCallable(dir string, name string) error {
+	path := dir + "/" + name
+
+	writeToFileBefore(path+"/main.go", "// "+name, templater{template: ModuleCall})
 
 	return nil
 }
