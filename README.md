@@ -20,7 +20,12 @@ eather module -n EmptyModule
 
 This will create all necessary files for an empty module. New module will be stored to your env variable `CUSTOM_MODULES_DIR`
 
-### Module with controller 
+### With Controller 
 ```
 eather module -n EmptyModule -c
+```
+
+### With Events
+```
+eather module -n EmptyModule -e
 ```
