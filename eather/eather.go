@@ -40,6 +40,7 @@ func main() {
 					&cli.BoolFlag{Name: "upgrade", Aliases: []string{"u"}},
 					&cli.BoolFlag{Name: "cron", Aliases: []string{"cr"}},
 					&cli.BoolFlag{Name: "call", Aliases: []string{"ca"}},
+					&cli.BoolFlag{Name: "full", Aliases: []string{"f"}},
 				},
 			},
 		},

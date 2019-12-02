@@ -89,11 +89,11 @@ func createModule(c *cli.Context) error {
 
 	newModule(modulesDir, name)
 
-	if c.Bool("controller") {
+	if c.Bool("controller") || c.Bool("full") {
 		initModController(modulesDir, name)
 	}
 
-	if c.Bool("events") {
+	if c.Bool("events") || c.Bool("full") {
 		initModEvents(modulesDir, name)
 	}
 
@@ -101,15 +101,15 @@ func createModule(c *cli.Context) error {
 		initModModel(modulesDir, name, model)
 	}
 
-	if c.Bool("upgrade") {
+	if c.Bool("upgrade") || c.Bool("full") {
 		initModUpgrade(modulesDir, name)
 	}
 
-	if c.Bool("cron") {
+	if c.Bool("cron") || c.Bool("full") {
 		initModCron(modulesDir, name)
 	}
 
-	if c.Bool("call") {
+	if c.Bool("call") || c.Bool("full") {
 		initModCallable(modulesDir, name)
 	}
 
