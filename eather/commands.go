@@ -89,6 +89,10 @@ func createModule(c *cli.Context) error {
 		initModController(modulesDir, name)
 	}
 
+	if c.Bool("events") {
+		initModEvents(modulesDir, name)
+	}
+
 	fmt.Println("Module " + name + " was crafted")
 
 	return nil

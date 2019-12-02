@@ -63,6 +63,34 @@ func (m module) MapRoutes() {
 }
 `
 
+// ModuleEvents template for events
+const ModuleEvents = `package main
+
+import (
+	"github.com/EatherGo/eather"
+)
+
+// GetEventFuncs will return slice of events
+func (m module) GetEventFuncs() []eather.Fire {
+	return eventFuncs
+}
+
+var eventFuncs = []eather.Fire{
+	eather.Fire{Call: "added", Func: added},
+}
+
+var added = func(data ...interface{}) {
+	// do stuff here
+}
+`
+
+// ModuleEventsXML add events to xml
+const ModuleEventsXML = `
+	<events>
+		<listener for="product_added" call="added" name="add_some_stuff"></listener>
+	</events>
+`
+
 type template interface {
 	parseData(name string) string
 }
@@ -114,6 +142,16 @@ func initModController(dir string, name string) error {
 	createFile(path+"/controller.go", templater{template: ModuleController})
 
 	writeToFileBefore(path+"/main.go", "// "+name, templater{template: ModuleMainMapRouter})
+
+	return nil
+}
+
+func initModEvents(dir string, name string) error {
+	path := dir + "/" + name
+
+	createFile(path+"/events.go", templater{template: ModuleEvents})
+
+	writeToFileBefore(path+"etc/module.xml", "</module>", templater{template: ModuleEventsXML})
 
 	return nil
 }
