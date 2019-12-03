@@ -29,3 +29,35 @@ eather module -n EmptyModule -c
 ```
 eather module -n EmptyModule -e
 ```
+
+### With Model
+```
+eather module -n EmptyModule -m MyModel
+```
+
+### With Upgrade
+```
+eather module -n EmptyModule -u
+```
+
+### With Cron
+```
+eather module -n EmptyModule -cr
+```
+
+### With Callable Func
+```
+eather module -n EmptyModule -ca
+```
+
+### To create module with all predefined funcs
+```
+eather module -n EmptyModule -f -m MyModel
+```
+Where -f flag is for full module including Controller, Events, Upgrade, Cron, Callable func. Or run it calling all flags.
+```
+eather module -n EmptyModule -c -e -u -cr -ca -m MyModel
+```
+
+
+
