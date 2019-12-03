@@ -23,7 +23,7 @@ func main() {
 				Usage:   "Create new eather application",
 				Action:  createNew,
 				Flags: []cli.Flag{
-					&cli.StringFlag{Name: "name", Aliases: []string{"n"}},
+					&cli.StringFlag{Name: "name", Aliases: []string{"n"}, Required: true},
 				},
 			},
 			{
@@ -32,7 +32,7 @@ func main() {
 				Usage:   "Create new module for application",
 				Action:  createModule,
 				Flags: []cli.Flag{
-					&cli.StringFlag{Name: "name", Aliases: []string{"n"}},
+					&cli.StringFlag{Name: "name", Aliases: []string{"n"}, Required: true},
 					&cli.StringFlag{Name: "path", Aliases: []string{"p"}},
 					&cli.BoolFlag{Name: "controller", Aliases: []string{"c"}},
 					&cli.BoolFlag{Name: "events", Aliases: []string{"e"}},
