@@ -43,6 +43,15 @@ func main() {
 					&cli.BoolFlag{Name: "full", Aliases: []string{"f"}},
 				},
 			},
+			{
+				Name:    "start",
+				Aliases: []string{"s"},
+				Usage:   "Start module",
+				Action:  startModule,
+				Flags: []cli.Flag{
+					&cli.StringFlag{Name: "name", Aliases: []string{"n"}, Required: true},
+				},
+			},
 		},
 	}
 

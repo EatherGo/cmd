@@ -117,3 +117,9 @@ func createModule(c *cli.Context) error {
 
 	return nil
 }
+
+func startModule(c *cli.Context) error {
+	fmt.Println(c.String("name"))
+
+	return nil
+}
